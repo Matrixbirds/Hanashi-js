@@ -1,35 +1,17 @@
-const http = require('http');
+// load app environment
+process.$LOAD_PATH = require('./environment.js').load_path;
+process.$LOAD_PATH(module.paths, "app/", "views/", "actors/", "app/helpers/");
 
-const ResponseHelper = require('./app/helpers/response-helper.js')
+const http = require('http');
+const ejs = require('ejs');
+const path = require('path');
+
+const abs = require('abs-actor.js');
+
+const Home = require('home.js');
+const Wish = require('wish.js');
 
 const config = null;
-
-class Home {
-  constructor(req, res) {
-    this.req = req;
-    this.res = res;
-  }
-
-  index() {
-    ResponseHelper.render({json: "234234", statusCode: 200}, this.req, this.res);
-  }
-}
-
-class Wish {
-
-  constructor(req, res) {
-    this.req = req;
-    this.res = res;
-  }
-
-  index() {
-    ResponseHelper.render({html: "234234", statusCode: 200}, this.req, this.res);
-  }
-
-  show() {
-    ResponseHelper.render({json: "234234", statusCode: 200}, this.req, this.res);
-  }
-}
 
 const routes = ["/home", "/wish/index", "/wish/:id"];
 
