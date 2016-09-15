@@ -1,4 +1,5 @@
 const ejs = require('ejs');
+const fs = require('fs');
 
 module.exports = {
   render: function(options, request, response) {
@@ -21,21 +22,41 @@ module.exports = {
     request.on('data', (_data) => {
       data.push(_data);
     }).on('end', () => {
-      _req = requestHelper(request, data);
-      responseHelper(_req, response);
+      requestObject = requestHelper(request, data);
+      responseHelper(response, options.ejs || requestObject, options.path);
     });
   }
 }
 
-function responseHelper(data, res) {
-  res.write(data);
-  res.end();
+function responseHelper(res, requestObject, path) {
+  if (path) {
+    ejsHelper.call(res, path, requestObject);
+  }
+  else {
+    res.write(JSON.stringify(requestObject));
+    res.end();
+  }
+}
+
+function ejsHelper(path, data) {
+  var res = this;
+  ejs.renderFile(path, data, function(err, html) {
+    if (!err) {
+      res.write(html);
+      res.end();
+    }
+    else {
+      res.write("Operation Error");
+      res.end();
+    }
+  });
 }
 
 function requestHelper(req, data) {
   result = as_json(req, "method", "url");
-  result["body"] = JSON.parse(Buffer.concat(data).toString());
-  return JSON.stringify(result);
+  if (data.length > 0)
+    result["data"] = JSON.parse(Buffer.concat(data).toString());
+  return result;
 }
 
 function as_json(obj, ...keys) {

@@ -1,15 +1,15 @@
 // load app environment
 process.$LOAD_PATH = require('./environment.js').load_path;
-process.$LOAD_PATH(module.paths, "app/", "views/", "actors/", "app/helpers/");
+process.$LOAD_PATH(module.paths, "app/", "actors/", "app/helpers/");
 
 const http = require('http');
 const ejs = require('ejs');
 const path = require('path');
 
-const abs = require('abs-actor.js');
+const Home = require('home');
+const Wish = require('wish');
 
-const Home = require('home.js');
-const Wish = require('wish.js');
+const ResponseHelper = require('response-helper');
 
 const config = null;
 
@@ -20,7 +20,7 @@ function dispatch(request, response) {
     route = `${request.method} ${request.url}`;
     switch(true) {
       case /GET \/home/.test(route):
-        new Home(request, response).index();
+        new Home(request, response).index("./views/home/index.ejs");
         break;
 
       case /GET \/wish\/index/.test(route):
